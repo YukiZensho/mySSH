@@ -38,7 +38,7 @@ void error(const char *output, ...){/*{{{*/
 
 
 int main(int argC, char *argV[]){/*{{{*/
-    initscr();        
+
     if(argC < 2){
         char * output;
         output = malloc(strlen(argV[0])+10);
@@ -47,7 +47,10 @@ int main(int argC, char *argV[]){/*{{{*/
         error(output, 1);
         free(output);
     }
-    
+
+    int keypress;
+
+    /*{{{ Socket configuration*/    
     int socketFD, newSocketFD, portNumber;
     char buffer[BUFFER_SIZE];
 
@@ -73,14 +76,17 @@ int main(int argC, char *argV[]){/*{{{*/
     cliLen = sizeof(cliAddr);
 
     newSocketFD = accept(socketFD, (struct sockaddr *) &cliLen, &cliLen);
-
-    if(newSocketFD < 0)
+       if(newSocketFD < 0)
         error("socket accept error", 4);
-    int readV, writeV;
+    //int readV, writeV;
+     /*}}}*/
 
     // Herein layeth the logic
     while(1){
-        bzero(buffer, BUFFER_SIZE);
+        if(read(socketFD, &keypress, sizeof(keypress)) < 0)
+            error("Reading error", 5);
+        printf("%i", keypress);
+/*        bzero(buffer, BUFFER_SIZE);
         if((readV = read(newSocketFD, buffer, BUFFER_SIZE)) < 0)
                 error("Reading error", 5);
         printf("Client: %s\n", buffer);
@@ -93,6 +99,7 @@ int main(int argC, char *argV[]){/*{{{*/
 
         if(strncmp(buffer, "exit", 4) == 0)
             break;
+*/
    }
    close(newSocketFD);
    close(socketFD);
