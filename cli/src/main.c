@@ -76,24 +76,11 @@ int main(int argC, char * argV[]){/*{{{*/
         error("connection error", 3);
 /*}}}*/
     while(1){
-/*        keypress = getch();
-        if(!keypress || keypress == ERR)
-            continue;
-        if(write(socketFD, &keypress, sizeof(keypress)) < 0)
-            error("write error", 4);
-*/      bzero(buffer, BUFFER_SIZE);
+        bzero(buffer, BUFFER_SIZE);
         fgets(buffer, BUFFER_SIZE, stdin);
 
         if(write(socketFD, buffer, strlen(buffer)) < 0)
             error("write error", 4);
-
-        bzero(buffer, BUFFER_SIZE);
-        if(read(socketFD, buffer, BUFFER_SIZE) < 0)
-            error("read error", 5);
-
-        printf("Server: %s", buffer);
-        if(strncmp(buffer, "exit", 4) == 0)
-            break;
 
         }
     printf("DONE!\n");

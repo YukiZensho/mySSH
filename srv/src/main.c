@@ -78,26 +78,21 @@ int main(int argC, char *argV[]){/*{{{*/
     newSocketFD = accept(socketFD, (struct sockaddr *) &cliLen, &cliLen);
        if(newSocketFD < 0)
         error("socket accept error", 4);
-    int readV, writeV;
      /*}}}*/
 
-    // Herein layeth the logic
+    // {{{ Herein layeth the logic
     while(1){
         bzero(buffer, BUFFER_SIZE);
-        if((readV = read(newSocketFD, buffer, BUFFER_SIZE)) < 0)
-                error("Reading error", 5);
+        if(read(newSocketFD, buffer, BUFFER_SIZE) < 0)
+            error("Reading error", 5);
+        if(!buffer[0])
+            break;
+
         printf("Client: %s\n", buffer);
 
-        bzero(buffer, BUFFER_SIZE);
-        fgets(buffer, BUFFER_SIZE, stdin);
-
-        if((write(newSocketFD, buffer, strlen(buffer))) < 0)
-                error("Writing error", 6);
-
-        if(strncmp(buffer, "exit", 4) == 0)
-            break;
-   }
-   close(newSocketFD);
-   close(socketFD);
-   return 0;
+    }
+    /*}}}*/
+    close(newSocketFD);
+    close(socketFD);
+    return 0;
 }/*}}}*/
