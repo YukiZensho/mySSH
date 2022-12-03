@@ -20,7 +20,7 @@
 #define BUFFER_SIZE 0x800
 
 #define PORT 2425
-#define NUMBER_OF_USERS 2
+#define NUMBER_OF_USERS 4
 
 #define PUBLIC_KEY "public.pub"
 #define PRIVATE_KEY "private.pem"
@@ -32,9 +32,9 @@ void error(const char *output, ...){/*{{{ error behaveour definition*/
 
     va_list vList;
     va_start(vList, output);
-    
     printf("%s", output);
-
+    if(output[strlen(output) - 1] != '\n') 
+        printf("\n");
     int errorValue = va_arg(vList, int);
     if(errorValue)
         exit(errorValue);

@@ -47,12 +47,14 @@ int main(int argC, char * argV[]){/*{{{*/
 /*}}}*/
     while(1){
         bzero(buffer, BUFFER_SIZE);
-        //fgets(buffer, BUFFER_SIZE, stdin);
         buffer[1] = 0;
         buffer[0] = getch();
         if(write(socketFD, buffer, strlen(buffer)) < 0)
             error("write error", 4);
-
+        
+        if(read(socketFD, buffer, BUFFER_SIZE) < 0)
+            error("write error", 4);
+        mvprintw(0, 0, "%s", buffer);
         }
     printf("DONE!\n");
 

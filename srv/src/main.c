@@ -5,8 +5,66 @@
 #include "../../lib/config.h"
 #include "../../lib/rsa.h"
 
-int main(int argC, char *argV[]){/*{{{*/
+//#include "rsa.h"
+//#include "config.h"
 
+void connect_socket(int * socketFD, int * newSocketFD, struct sockaddr_in * servAddr, struct sockaddr_in * cliAddr, socklen_t * cliLen){/*{{{*/
+
+    *socketFD = socket(AF_INET, SOCK_STREAM, 0);
+    if(*socketFD < 0)
+        error("socket opening error", 2);
+
+    bzero((char *) servAddr, sizeof(*servAddr));
+    bzero((char *) cliAddr, sizeof(*cliAddr));
+   
+    servAddr->sin_family = AF_INET;
+    servAddr->sin_addr.s_addr = INADDR_ANY;
+    servAddr->sin_port = htons(PORT);
+
+    if(bind(*socketFD, (struct sockaddr *) servAddr, sizeof(*servAddr)) < 0)
+        error("binding error", 3);
+
+    listen(*socketFD, NUMBER_OF_USERS);
+    *cliLen = sizeof(*cliAddr);
+
+
+}
+/*}}}*/
+
+void instance(int * socketFD, socklen_t * cliLen){ /*{{{*/
+
+    char buffer[BUFFER_SIZE],keypress;
+    
+    int newSocketFD;
+    newSocketFD = accept(*socketFD, (struct sockaddr *) cliLen, cliLen);
+    if(newSocketFD < 0)
+        error("socket accept error", 4);   
+
+    while(1){
+        bzero(buffer, BUFFER_SIZE);
+        if(read(newSocketFD, buffer, BUFFER_SIZE) < 0)
+            error("Reading error", 5);
+        if(!buffer[0])
+            break;
+        printf("pressed = %c 0x%x\n", buffer[0], buffer[0]);
+        keypress = buffer[0];
+        bzero(buffer, BUFFER_SIZE);
+        sprintf(buffer, "You pressed : %c 0x%x\n", keypress, keypress);
+        if(write(newSocketFD, buffer, strlen(buffer)) < 0)
+            error("Writing error", 6);
+
+        if(keypress == 0x1b)
+            break;
+
+    }
+    printf("Done with this instance!");
+    close(newSocketFD);
+    exit(0);
+
+}/*}}}*/
+
+int main(int argC, char *argV[]){/*{{{*/
+/*{{{
     if(argC < 2){
         char * output;
         output = malloc(strlen(argV[0])+10);
@@ -15,52 +73,29 @@ int main(int argC, char *argV[]){/*{{{*/
         error(output, 1);
         free(output);
     }
-
+    }}}*/
     rsa_generate_keypair();
 
     /*{{{ Socket configuration*/    
-    int socketFD, newSocketFD, portNumber;
-    char buffer[BUFFER_SIZE];
-
+    int socketFD, newSocketFD, secSocketFD, portNumber;
     struct sockaddr_in servAddr, cliAddr;
     socklen_t cliLen;
-
-    socketFD = socket(AF_INET, SOCK_STREAM, 0);
-    if(socketFD < 0)
-        error("socket opening error", 2);
-
-    bzero((char *) &servAddr, sizeof(servAddr));
-    bzero((char *) &cliAddr, sizeof(cliAddr));
-    portNumber = atoi(argV[1]);
     
-    servAddr.sin_family = AF_INET;
-    servAddr.sin_addr.s_addr = INADDR_ANY;
-    servAddr.sin_port = htons(portNumber);
-
-    if(bind(socketFD, (struct sockaddr *) &servAddr, sizeof(servAddr)) < 0)
-        error("binding error", 3);
-
-    listen(socketFD, NUMBER_OF_USERS);
-    cliLen = sizeof(cliAddr);
-
-    newSocketFD = accept(socketFD, (struct sockaddr *) &cliLen, &cliLen);
-       if(newSocketFD < 0)
-        error("socket accept error", 4);
-     /*}}}*/
-
-    // {{{ Herein layeth the logic
-    while(1){
-        bzero(buffer, BUFFER_SIZE);
-        if(read(newSocketFD, buffer, BUFFER_SIZE) < 0)
-            error("Reading error", 5);
-        if(!buffer[0])
-            break;
-
-        printf("Client: %s %x\n", buffer, buffer[0]);
-
-    }
+    connect_socket(&socketFD, &newSocketFD, &servAddr, &cliAddr, &cliLen);
     /*}}}*/
-    close(newSocketFD);
+    int activeUsers = 0;
+    while(1){
+        while(activeUsers < NUMBER_OF_USERS){
+            int pid;
+            if((pid = fork()) < 0)
+                error("Forking error", 7);
+            if(!pid)
+                instance(&socketFD, &cliLen);
+
+            activeUsers += 1;
+        }
+    //instance(&socketFD, &cliLen);
+    }
     close(socketFD);
     return 0;
 }/*}}}*/
