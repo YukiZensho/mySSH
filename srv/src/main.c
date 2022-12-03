@@ -2,40 +2,8 @@
 /*
  *      THIS IS THE SERVER
 */
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <errno.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <stdarg.h>
-
-
-#include <openssl/rsa.h>
-#include <openssl/pem.h>
-
-#define BUFFER_SIZE 0x800
-#define NUMBER_OF_USERS 2
-
-void error(const char *output, ...){/*{{{*/ 
-
-    //triple brakets represent a fold in nvim if you set foldmethod=marker
-
-    va_list vList;
-    va_start(vList, output);
-    
-    printf("%s", output);
-
-    int errorValue = va_arg(vList, int);
-    if(errorValue)
-        exit(errorValue);
-    exit(-1);
-}/*}}}*/
-
+#include "../../lib/config.h"
+#include "../../lib/rsa.h"
 
 int main(int argC, char *argV[]){/*{{{*/
 
@@ -48,7 +16,7 @@ int main(int argC, char *argV[]){/*{{{*/
         free(output);
     }
 
-
+    rsa_generate_keypair();
 
     /*{{{ Socket configuration*/    
     int socketFD, newSocketFD, portNumber;

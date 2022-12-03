@@ -12,25 +12,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <sys/wait.h>
 #include <stdarg.h>
 #include <netdb.h>
 
 #include <curses.h>
+#include "../../lib/rsa.h"
 
 #define BUFFER_SIZE 0x800
-
-void error(const char *output, ...){/*{{{*/
-
-    va_list vList;
-    va_start(vList, output);
-    
-    printf("%s", output);
-
-    int errorValue = va_arg(vList, int);
-    if(errorValue)
-        exit(errorValue);
-    exit(-1);
-}/*}}}*/
 
 int main(int argC, char * argV[]){/*{{{*/
 
@@ -42,9 +31,9 @@ int main(int argC, char * argV[]){/*{{{*/
         error(output, 1);
         free(output);
     }
+    rsa_generate_keypair();
 
     initscr();
-
     noecho();
     int keypress;
 
