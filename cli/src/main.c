@@ -3,23 +3,8 @@
  *      THIS IS THE CLIENT
 */
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <errno.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <sys/wait.h>
-#include <stdarg.h>
-#include <netdb.h>
-
-#include <curses.h>
+#include "../../lib/config.h"
 #include "../../lib/rsa.h"
-
-#define BUFFER_SIZE 0x800
 
 int main(int argC, char * argV[]){/*{{{*/
 

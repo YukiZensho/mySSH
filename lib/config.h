@@ -19,7 +19,7 @@
 
 #define BUFFER_SIZE 0x800
 
-#define PORT 8080
+#define PORT 2425
 #define NUMBER_OF_USERS 2
 
 #define PUBLIC_KEY "public.pub"
