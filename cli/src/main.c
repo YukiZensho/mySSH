@@ -43,14 +43,10 @@ int main(int argC, char * argV[]){/*{{{*/
         free(output);
     }
 
-  /*  initscr();
+    initscr();
 
-    cbreak();
     noecho();
-    nodelay(stdscr, TRUE);
-    scrollok(stdscr, TRUE);
     int keypress;
-*/
 
 /*{{{ Socket configuration*/    
     int socketFD, portNumber;
@@ -77,8 +73,9 @@ int main(int argC, char * argV[]){/*{{{*/
 /*}}}*/
     while(1){
         bzero(buffer, BUFFER_SIZE);
-        fgets(buffer, BUFFER_SIZE, stdin);
-
+        //fgets(buffer, BUFFER_SIZE, stdin);
+        buffer[1] = 0;
+        buffer[0] = getch();
         if(write(socketFD, buffer, strlen(buffer)) < 0)
             error("write error", 4);
 

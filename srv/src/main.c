@@ -88,7 +88,7 @@ int main(int argC, char *argV[]){/*{{{*/
         if(!buffer[0])
             break;
 
-        printf("Client: %s\n", buffer);
+        printf("Client: %s %x\n", buffer, buffer[0]);
 
     }
     /*}}}*/
