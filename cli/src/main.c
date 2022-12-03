@@ -43,14 +43,14 @@ int main(int argC, char * argV[]){/*{{{*/
         free(output);
     }
 
-    initscr();
+  /*  initscr();
 
     cbreak();
     noecho();
     nodelay(stdscr, TRUE);
     scrollok(stdscr, TRUE);
     int keypress;
-
+*/
 
 /*{{{ Socket configuration*/    
     int socketFD, portNumber;
@@ -76,12 +76,12 @@ int main(int argC, char * argV[]){/*{{{*/
         error("connection error", 3);
 /*}}}*/
     while(1){
-        keypress = getch();
+/*        keypress = getch();
         if(!keypress || keypress == ERR)
             continue;
         if(write(socketFD, &keypress, sizeof(keypress)) < 0)
             error("write error", 4);
-/*      bzero(buffer, BUFFER_SIZE);
+*/      bzero(buffer, BUFFER_SIZE);
         fgets(buffer, BUFFER_SIZE, stdin);
 
         if(write(socketFD, buffer, strlen(buffer)) < 0)
@@ -94,7 +94,7 @@ int main(int argC, char * argV[]){/*{{{*/
         printf("Server: %s", buffer);
         if(strncmp(buffer, "exit", 4) == 0)
             break;
-*/
+
         }
     printf("DONE!\n");
 

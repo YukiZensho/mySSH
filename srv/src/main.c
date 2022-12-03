@@ -48,7 +48,7 @@ int main(int argC, char *argV[]){/*{{{*/
         free(output);
     }
 
-    int keypress;
+
 
     /*{{{ Socket configuration*/    
     int socketFD, newSocketFD, portNumber;
@@ -78,15 +78,12 @@ int main(int argC, char *argV[]){/*{{{*/
     newSocketFD = accept(socketFD, (struct sockaddr *) &cliLen, &cliLen);
        if(newSocketFD < 0)
         error("socket accept error", 4);
-    //int readV, writeV;
+    int readV, writeV;
      /*}}}*/
 
     // Herein layeth the logic
     while(1){
-        if(read(socketFD, &keypress, sizeof(keypress)) < 0)
-            error("Reading error", 5);
-        printf("%i", keypress);
-/*        bzero(buffer, BUFFER_SIZE);
+        bzero(buffer, BUFFER_SIZE);
         if((readV = read(newSocketFD, buffer, BUFFER_SIZE)) < 0)
                 error("Reading error", 5);
         printf("Client: %s\n", buffer);
@@ -99,7 +96,6 @@ int main(int argC, char *argV[]){/*{{{*/
 
         if(strncmp(buffer, "exit", 4) == 0)
             break;
-*/
    }
    close(newSocketFD);
    close(socketFD);
