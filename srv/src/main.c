@@ -33,12 +33,22 @@ void connect_socket(int * socketFD, int * newSocketFD, struct sockaddr_in * serv
 
 void instance(int * socketFD, socklen_t * cliLen){ /*{{{*/
 
-    char buffer[BUFFER_SIZE],keypress;
+    char buffer[BUFFER_SIZE], username[BUFFER_SIZE],keypress;
     
     int newSocketFD;
     newSocketFD = accept(*socketFD, (struct sockaddr *) cliLen, cliLen);
     if(newSocketFD < 0)
-        error("socket accept error", 4);   
+        error("socket accept error", 4); 
+
+    bzero(username, BUFFER_SIZE);
+    if(read(newSocketFD, username, BUFFER_SIZE) < 0)
+        error("Reading error", 5);
+   printf("%s",username);
+
+    bzero(buffer, BUFFER_SIZE);
+    if(read(newSocketFD, buffer, BUFFER_SIZE) < 0)
+        error("Reading error", 5);
+    printf("#%s\n", buffer);
 
     while(1){
         bzero(buffer, BUFFER_SIZE);
@@ -49,7 +59,8 @@ void instance(int * socketFD, socklen_t * cliLen){ /*{{{*/
         printf("pressed = %c 0x%x\n", buffer[0], buffer[0]);
         keypress = buffer[0];
         bzero(buffer, BUFFER_SIZE);
-        sprintf(buffer, "You pressed : %c 0x%x\n", keypress, keypress);
+        sprintf(buffer, "Pressed: %c 0x%x", keypress, keypress);
+        //sprintf(buffer, "You pressed : %c 0x%x\n", keypress, keypress);
         if(write(newSocketFD, buffer, strlen(buffer)) < 0)
             error("Writing error", 6);
 
@@ -57,7 +68,7 @@ void instance(int * socketFD, socklen_t * cliLen){ /*{{{*/
             break;
 
     }
-    printf("Done with this instance!");
+    printf("Done with this instance!\n");
     close(newSocketFD);
     exit(0);
 
@@ -85,14 +96,16 @@ int main(int argC, char *argV[]){/*{{{*/
     /*}}}*/
     int activeUsers = 0;
     while(1){
-        while(activeUsers < NUMBER_OF_USERS){
+        if(activeUsers < NUMBER_OF_USERS){
             int pid;
             if((pid = fork()) < 0)
                 error("Forking error", 7);
             if(!pid)
                 instance(&socketFD, &cliLen);
-
-            activeUsers += 1;
+            else{
+                activeUsers += 1;
+                continue;
+            }
         }
     //instance(&socketFD, &cliLen);
     }
